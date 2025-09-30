@@ -106,7 +106,7 @@ services:
       - "9001:9001"     # Консоль управления
     command: server /data --console-address ":9001"
     volumes:
-      - minio-data:/data
+      - .data:/data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
