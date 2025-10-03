@@ -1,5 +1,4 @@
 import logging
-
 import duckdb
 import pendulum
 from airflow import DAG
@@ -9,11 +8,11 @@ from airflow.operators.python import PythonOperator
 
 
 # Конфигурация DAG
-OWNER = "i.korsakov"
+OWNER = "Roman"
 DAG_ID = "raw_from_api_to_s3"
 
 # Используемые таблицы в DAG
-LAYER = "raw"
+LAYER = "row"
 SOURCE = "prod"
 
 # S3
@@ -28,16 +27,20 @@ SHORT_DESCRIPTION = "SHORT DESCRIPTION"
 
 args = {
     "owner": OWNER,
-    "start_date": pendulum.datetime(2025, 5, 1, tz="Europe/Moscow"),
+    "start_date": pendulum.datetime(2025, 9, 1, tz="Asia/Krasnoyarsk"),
     "retries": 3,
     "retry_delay": pendulum.duration(hours=1),
 }
 
 
+
 def get_dates(**context) -> tuple[str, str]:
     """"""
     start_date = context["data_interval_start"].format("YYYY-MM-DD")
-    end_date = (context["data_interval_start"] + pendulum.duration(days=1)).format("YYYY-MM-DD")
+
+    end_date =  (context["data_interval_start"] + pendulum.duration(days=1)).format(
+        "YYYY-MM-DD"
+    )
 
     return start_date, end_date
 
@@ -79,7 +82,7 @@ with DAG(
     dag_id=DAG_ID,
     schedule="0 5 * * *",
     default_args=args,
-    catchup=True, 
+    catchup=True,
     tags=["s3", "raw"],
     description=SHORT_DESCRIPTION,
     max_active_tasks=1,
